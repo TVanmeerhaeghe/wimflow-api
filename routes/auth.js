@@ -10,12 +10,20 @@ router.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
-    const user = await User.create({ username, email, password, role });
-    res.status(201).json({ message: "User created successfully", user });
+    await User.create({
+      username,
+      email,
+      password,
+      role: role || 'user'
+    });
+
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error creating user", error });
   }
 });
+
 
 // Login route
 router.post("/login", async (req, res) => {
