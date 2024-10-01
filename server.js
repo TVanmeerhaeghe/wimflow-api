@@ -1,11 +1,14 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const dotenv = require("dotenv");
 const sequelize = require("./config/db");
 const authRoutes = require("./routes/auth");
 
 // Load environment variables
 dotenv.config();
+
+app.use(cors({ origin: 'http://localhost:8080' }));
 
 // Middleware
 app.use(express.json());
