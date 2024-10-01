@@ -56,7 +56,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 // Protected route (only for authenticated users)
 router.get("/profile", verifyToken, async (req, res) => {
   try {
