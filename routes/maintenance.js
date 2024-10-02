@@ -80,6 +80,33 @@ router.post("/maintenance/:siteId", verifyToken, checkRole("admin"), async (req,
   }
 });
 
+router.get("/next", async (req, res) => {
+  try {
+    const maintenances = await Maintenance.findAll({
+      where: { active: true },
+      include: [Site],
+      order: [["next_maintenance", "ASC"]],
+    });
+
+    const upcomingMaintenance = maintenances.find((maintenance) => {
+      const nextDate = new Date(maintenance.next_maintenance);
+      return nextDate > new Date() && maintenance.Site.maintenance_status;
+    });
+
+    if (!upcomingMaintenance) {
+      return res.json({ message: "Aucune maintenance à venir" });
+    }
+
+    return res.json({
+      siteName: upcomingMaintenance.Site.name,
+      date: upcomingMaintenance.next_maintenance,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Erreur lors de la récupération de la prochaine maintenance" });
+  }
+});
+
+
 router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
     try {
       const maintenances = await Maintenance.findAll({
