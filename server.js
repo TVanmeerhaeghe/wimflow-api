@@ -6,6 +6,7 @@ const sequelize = require("./config/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const maintenanceRoutes = require("./routes/maintenance");
+require("./cronJob");
 
 // Load environment variables
 dotenv.config();
@@ -20,9 +21,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 
+console.log(new Date());
+
 // Sync database and start server
 sequelize
-  .sync()
+  .sync({ alter: true })
   .then(() => {
     console.log("Database synced successfully");
     app.listen(3000, () => {

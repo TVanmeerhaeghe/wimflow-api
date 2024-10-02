@@ -13,7 +13,11 @@ const Site = sequelize.define("Site", {
   maintenance_status: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
-  }
+  },
+  email_maintenance: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 module.exports = Site;
