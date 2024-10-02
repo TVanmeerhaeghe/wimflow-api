@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const sequelize = require("./config/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
+const maintenanceRoutes = require("./routes/maintenance");
 
 // Load environment variables
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
 
 // Sync database and start server
 sequelize
