@@ -25,6 +25,18 @@ router.get("/sites", verifyToken, checkRole("admin"), async (req, res) => {
     }
 });
 
+router.get("/site/:id", async (req, res) => {
+    try {
+      const site = await Site.findByPk(req.params.id);
+      if (!site) {
+        return res.status(404).json({ message: "Site not found" });
+      }
+      res.json(site);
+    } catch (error) {
+      res.status(500).json({ message: "Error retrieving site", error });
+    }
+});
+
 // Modifier un site
 router.put("/site/:id", verifyToken, checkRole("admin"), async (req, res) => {
   const { name, url, maintenance_status } = req.body;
@@ -81,24 +93,30 @@ router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
 
 // Mettre à jour une maintenance (to_do ou done)
 router.put("/maintenance/:id", verifyToken, checkRole("admin"), async (req, res) => {
-  const { status } = req.body;
-  try {
-    const maintenance = await Maintenance.findByPk(req.params.id);
-    if (!maintenance) {
-      return res.status(404).json({ message: "Maintenance not found" });
+    const { status } = req.body;
+    try {
+      const maintenance = await Maintenance.findByPk(req.params.id);
+      if (!maintenance) {
+        return res.status(404).json({ message: "Maintenance not found" });
+      }
+  
+      if (status === "done") {
+        maintenance.last_maintenance = new Date();
+        maintenance.next_maintenance = new Date(maintenance.last_maintenance.getTime() + 30 * 24 * 60 * 60 * 1000);
+      }
+  
+      await maintenance.update({
+        status,
+        last_maintenance: maintenance.last_maintenance,
+        next_maintenance: maintenance.next_maintenance,
+      });
+  
+      res.json(maintenance);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating maintenance", error });
     }
-
-    if (status === "done") {
-      maintenance.last_maintenance = new Date();
-      maintenance.next_maintenance = new Date(maintenance.last_maintenance.getTime() + 30 * 24 * 60 * 60 * 1000); // Ajoute un mois
-    }
-
-    await maintenance.update({ status });
-    res.json(maintenance);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating maintenance", error });
-  }
 });
+  
 
 // Liste des maintenances d'un site
 router.get("/site/:siteId", verifyToken, checkRole("admin"), async (req, res) => {
