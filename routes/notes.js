@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Note = require("../models/Note");
 const Maintenance = require("../models/Maintenance");
+const User = require("../models/User");
 const { verifyToken } = require("../middleware/auth");
 
 // Ajouter une note à une maintenance

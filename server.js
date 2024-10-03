@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const maintenanceRoutes = require("./routes/maintenance");
 const siteRoutes = require("./routes/sites");
+const noteRoutes = require("./routes/notes")
 require("./cronJob");
 require("./models/associations");
 
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/site", siteRoutes);
+app.use("/api/note", noteRoutes);
 
 console.log(new Date());
 

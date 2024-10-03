@@ -57,6 +57,23 @@ router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
   }
 });
 
+// Récupérer une maintenance par ID
+router.get("/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  try {
+    const maintenance = await Maintenance.findByPk(req.params.id, {
+      include: Site,
+    });
+    
+    if (!maintenance) {
+      return res.status(404).json({ message: "Maintenance not found" });
+    }
+    
+    res.json(maintenance);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching maintenance details", error });
+  }
+});
+
 // Mettre à jour une maintenance
 router.put("/modify/:id", verifyToken, checkRole("admin"), async (req, res) => {
   const { status } = req.body;
