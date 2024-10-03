@@ -6,7 +6,9 @@ const sequelize = require("./config/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const maintenanceRoutes = require("./routes/maintenance");
+const siteRoutes = require("./routes/sites");
 require("./cronJob");
+require("./models/associations");
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +22,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/site", siteRoutes);
 
 console.log(new Date());
 

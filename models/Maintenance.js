@@ -29,7 +29,4 @@ const Maintenance = sequelize.define("Maintenance", {
   }
 });
 
-Site.hasMany(Maintenance, { foreignKey: "site_id" });
-Maintenance.belongsTo(Site, { foreignKey: "site_id" });
-
 module.exports = Maintenance;
