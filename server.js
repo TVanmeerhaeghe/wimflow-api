@@ -8,6 +8,7 @@ const userRoutes = require("./routes/users");
 const maintenanceRoutes = require("./routes/maintenance");
 const siteRoutes = require("./routes/sites");
 const noteRoutes = require("./routes/notes")
+const clientRoutes = require("./routes/clients");
 require("./cronJob");
 require("./models/associations");
 
@@ -25,12 +26,13 @@ app.use("/api/user", userRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/site", siteRoutes);
 app.use("/api/note", noteRoutes);
+app.use("/api/client", clientRoutes);
 
 console.log(new Date());
 
 // Sync database and start server
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log("Database synced successfully");
     app.listen(3000, () => {
