@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Client = require("../models/Client");
+const Site = require("../models/Site");
 const { verifyToken, checkRole } = require("../middleware/auth");
 
 // Créer un nouveau client
@@ -16,6 +17,14 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
       postal_code,
       site_id,
     });
+
+    if (site_id) {
+      await Site.update(
+        { client_id: client.id },
+        { where: { id: site_id } }
+      );
+    }
+    
     res.status(201).json(client);
   } catch (error) {
     res.status(500).json({ message: "Error creating client", error });
@@ -25,7 +34,14 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
 // Récupérer tous les clients
 router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
   try {
-    const clients = await Client.findAll();
+    const clients = await Client.findAll({
+      include: [
+        {
+          model: Site,
+          attributes: ["url", "name"],
+        },
+      ],
+    });
     res.json(clients);
   } catch (error) {
     res.status(500).json({ message: "Error fetching clients", error });
