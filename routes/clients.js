@@ -6,7 +6,20 @@ const { verifyToken, checkRole } = require("../middleware/auth");
 
 // Créer un nouveau client
 router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
-  const { first_name, last_name, company, address, city, postal_code, site_id } = req.body;
+  const {
+    first_name,
+    last_name,
+    company,
+    address,
+    city,
+    postal_code,
+    site_id,
+    phone,
+    email,
+    client_type,
+    registration_date,
+    status,
+  } = req.body;
   try {
     const client = await Client.create({
       first_name,
@@ -15,7 +28,11 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
       address,
       city,
       postal_code,
-      site_id,
+      phone,
+      email,
+      client_type,
+      registration_date,
+      status,
     });
 
     if (site_id) {
@@ -24,7 +41,7 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
         { where: { id: site_id } }
       );
     }
-    
+
     res.status(201).json(client);
   } catch (error) {
     res.status(500).json({ message: "Error creating client", error });
@@ -63,13 +80,40 @@ router.get("/:id", verifyToken, checkRole("admin"), async (req, res) => {
 
 // Modifier un client
 router.put("/modify/:id", verifyToken, checkRole("admin"), async (req, res) => {
-  const { first_name, last_name, company, address, city, postal_code, site_id } = req.body;
+  const { 
+    first_name, 
+    last_name, 
+    company, 
+    address, 
+    city, 
+    postal_code, 
+    site_id, 
+    phone, 
+    email, 
+    client_type, 
+    status 
+  } = req.body;
+
   try {
     const client = await Client.findByPk(req.params.id);
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
     }
-    await client.update({ first_name, last_name, company, address, city, postal_code, site_id });
+    
+    await client.update({ 
+      first_name, 
+      last_name, 
+      company, 
+      address, 
+      city, 
+      postal_code, 
+      site_id, 
+      phone, 
+      email, 
+      client_type, 
+      status 
+    });
+    
     res.json(client);
   } catch (error) {
     res.status(500).json({ message: "Error updating client", error });

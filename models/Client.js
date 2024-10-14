@@ -26,6 +26,29 @@ const Client = sequelize.define("Client", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  client_type: {
+    type: DataTypes.ENUM("Individuel", "Entreprise", "Organisation"),
+    allowNull: true,
+  },
+  registration_date: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  status: {
+    type: DataTypes.ENUM("actif", "inactif"),
+    defaultValue: "actif",
+  },
 });
 
 module.exports = Client;
