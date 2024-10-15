@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Site = require("../models/Site");
-const Maintenance = require("../models/Maintenance");
-const { verifyToken, checkRole } = require("../middleware/auth");
+const Site = require("../../models/Site");
+const Maintenance = require("../../models/Maintenance/Maintenance");
+const { verifyToken, checkRole } = require("../../middleware/auth");
 
 // Créer une maintenance pour un site
 router.post("/:siteId", verifyToken, checkRole("admin"), async (req, res) => {

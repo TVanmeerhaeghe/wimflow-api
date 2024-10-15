@@ -5,9 +5,9 @@ const dotenv = require("dotenv");
 const sequelize = require("./config/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
-const maintenanceRoutes = require("./routes/maintenance");
+const maintenanceRoutes = require("./routes/maintenance/maintenance");
 const siteRoutes = require("./routes/sites");
-const noteRoutes = require("./routes/notes")
+const noteRoutes = require("./routes/maintenance/notes");
 const clientRoutes = require("./routes/clients");
 require("./cronJob");
 require("./models/associations");

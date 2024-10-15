@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
-const Site = require("./Site");
+const sequelize = require("../../config/db");
+const Site = require("../Site");
 
 const Maintenance = sequelize.define("Maintenance", {
   site_id: {

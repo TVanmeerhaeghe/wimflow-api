@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const Maintenance = require("./models/Maintenance");
+const Maintenance = require("./models/Maintenance/Maintenance");
 const Site = require("./models/Site");
 const sendReminderEmail = require("./mailer");
 const { Op } = require("sequelize");
