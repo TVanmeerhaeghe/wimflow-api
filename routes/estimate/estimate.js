@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken, checkRole } = require("../middleware/auth");
+const Estimate = require("../../models/Estimate/Estimate");
+const { verifyToken, checkRole } = require("../../middleware/auth");
 
 router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
     const {
@@ -35,4 +36,28 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
       res.status(500).json({ message: "Error creating estimate", error });
     }
 });
-  
+
+// Obtenir tous les devis
+router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
+  try {
+    const estimates = await Estimate.findAll();
+    res.json(estimates);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching estimates", error });
+  }
+});
+
+// Obtenir un devis par ID
+router.get("/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  try {
+    const estimate = await Estimate.findByPk(req.params.id);
+    if (!estimate) {
+      return res.status(404).json({ message: "Estimate not found" });
+    }
+    res.json(estimate);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching estimate", error });
+  }
+});
+
+module.exports = router;

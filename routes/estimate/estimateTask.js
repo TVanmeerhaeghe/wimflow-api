@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken, checkRole } = require("../middleware/auth");
+const EstimateTask = require("../../models/Estimate/EstimateTask");
+const { verifyToken, checkRole } = require("../../middleware/auth");
 
 router.post("/:estimateId/task", verifyToken, checkRole("admin"), async (req, res) => {
     const { estimateId } = req.params;
@@ -20,4 +21,5 @@ router.post("/:estimateId/task", verifyToken, checkRole("admin"), async (req, re
       res.status(500).json({ message: "Error creating estimate task", error });
     }
 });
-  
+
+module.exports = router;

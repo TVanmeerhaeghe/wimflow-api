@@ -1,13 +1,13 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/db");
 const Client = require("../Client");
-const User = require("../User");     
+const User = require("../User");
+const EstimateTask = require("./EstimateTask");     
 
 const Estimate = sequelize.define("Estimate", {
   id: {
     type: DataTypes.STRING,
     primaryKey: true,
-    defaultValue: () => `F${String(Math.floor(Math.random() * 100000)).padStart(5, '0')}`,
   },
   creation_date: {
     type: DataTypes.DATE,
@@ -20,6 +20,16 @@ const Estimate = sequelize.define("Estimate", {
   margin_ht: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
+  },
+  total_ht: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
+  },
+  total_tva: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0,
   },
   object: {
     type: DataTypes.STRING,
@@ -65,6 +75,37 @@ const Estimate = sequelize.define("Estimate", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+});
+
+Estimate.beforeCreate(async (estimate) => {
+  const lastEstimate = await Estimate.findOne({
+    order: [['id', 'DESC']]
+  });
+
+  if (lastEstimate) {
+    const lastIdNumber = parseInt(lastEstimate.id.slice(1));
+    const newIdNumber = String(lastIdNumber + 1).padStart(5, '0');
+    estimate.id = `D${newIdNumber}`;
+  } else {
+    estimate.id = "D00001";
+  }
+});
+
+Estimate.beforeSave(async (estimate) => {
+  const tasks = await EstimateTask.findAll({ where: { estimate_id: estimate.id } });
+
+  const totalHT = tasks.reduce((total, task) => {
+    return total + task.days * task.price_per_day;
+  }, 0);
+
+  const totalTVA = tasks.reduce((total, task) => {
+    const taskTotalHT = task.days * task.price_per_day;
+    const taskTVA = taskTotalHT * (task.tva / 100);
+    return total + taskTVA;
+  }, 0);
+
+  estimate.total_ht = totalHT;
+  estimate.total_tva = totalTVA;
 });
 
 module.exports = Estimate;

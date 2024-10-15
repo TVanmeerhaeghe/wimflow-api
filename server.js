@@ -9,15 +9,15 @@ const maintenanceRoutes = require("./routes/maintenance/maintenance");
 const siteRoutes = require("./routes/sites");
 const noteRoutes = require("./routes/maintenance/notes");
 const clientRoutes = require("./routes/clients");
+const estimateRoutes = require("./routes/estimate/estimate");
+const estimateTaskRoutes = require("./routes/estimate/estimateTask");
 require("./cronJob");
 require("./models/associations");
 
-// Load environment variables
 dotenv.config();
 
 app.use(cors({ origin: 'http://localhost:8080' }));
 
-// Middleware
 app.use(express.json());
 
 // Routes
@@ -27,10 +27,9 @@ app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/site", siteRoutes);
 app.use("/api/note", noteRoutes);
 app.use("/api/client", clientRoutes);
+app.use("/api/estimate", estimateRoutes);
+app.use("/api/estimate-task", estimateTaskRoutes);
 
-console.log(new Date());
-
-// Sync database and start server
 sequelize
   .sync()
   .then(() => {
