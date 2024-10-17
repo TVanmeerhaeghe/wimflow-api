@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Estimate = require("../../models/Estimate/Estimate");
 const EstimateTask = require("../../models/Estimate/EstimateTask");
+const Client = require("../../models/Client");
 const { verifyToken, checkRole } = require("../../middleware/auth");
 
 router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
@@ -41,7 +42,14 @@ router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
 // Obtenir tous les devis
 router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
   try {
-    const estimates = await Estimate.findAll();
+    const estimates = await Estimate.findAll({
+      include: [
+        {
+          model: Client,
+          attributes: ['company'],
+        },
+      ],
+    });
     res.json(estimates);
   } catch (error) {
     res.status(500).json({ message: "Error fetching estimates", error });
