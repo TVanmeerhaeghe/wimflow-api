@@ -71,10 +71,6 @@ const Estimate = sequelize.define("Estimate", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  general_sales_conditions: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-  },
 });
 
 Estimate.beforeCreate(async (estimate) => {

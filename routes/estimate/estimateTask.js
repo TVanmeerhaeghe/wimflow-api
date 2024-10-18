@@ -22,4 +22,23 @@ router.post("/:estimateId/task", verifyToken, checkRole("admin"), async (req, re
     }
 });
 
+// Route pour obtenir les tâches d'un devis spécifique
+router.get("/:estimateId/tasks", verifyToken, checkRole("admin"), async (req, res) => {
+  const { estimateId } = req.params;
+
+  try {
+    const tasks = await EstimateTask.findAll({
+      where: { estimate_id: estimateId },
+    });
+
+    if (!tasks) {
+      return res.status(404).json({ message: "No tasks found for this estimate" });
+    }
+
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks", error });
+  }
+});
+
 module.exports = router;
