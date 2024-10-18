@@ -11,6 +11,7 @@ const noteRoutes = require("./routes/maintenance/notes");
 const clientRoutes = require("./routes/clients");
 const estimateRoutes = require("./routes/estimate/estimate");
 const estimateTaskRoutes = require("./routes/estimate/estimateTask");
+const companyInfoRoutes = require("./routes/companyInfo");
 require("./cronJob");
 require("./models/associations");
 
@@ -29,6 +30,7 @@ app.use("/api/note", noteRoutes);
 app.use("/api/client", clientRoutes);
 app.use("/api/estimate", estimateRoutes);
 app.use("/api/estimate-task", estimateTaskRoutes);
+app.use("/api/company-info", companyInfoRoutes);
 
 sequelize
   .sync()
