@@ -56,16 +56,69 @@ router.get("/", verifyToken, checkRole("admin"), async (req, res) => {
   }
 });
 
-// Obtenir un devis par ID
+// Obtenir un devis par ID avec les tâches associées
 router.get("/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  try {
+    const estimate = await Estimate.findByPk(req.params.id, {
+      include: [
+        {
+          model: EstimateTask,
+          attributes: ['id', 'designation', 'description', 'days', 'price_per_day', 'tva'],
+        },
+        {
+          model: Client,
+          attributes: ['company'],
+        },
+      ],
+    });
+
+    if (!estimate) {
+      return res.status(404).json({ message: "Estimate not found" });
+    }
+
+    res.json(estimate);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching estimate", error });
+  }
+});
+
+// Mettre à jour un devis
+router.put("/:id", verifyToken, checkRole("admin"), async (req, res) => {
+  const {
+    client_id,
+    commercial_contact_id,
+    margin_ht,
+    object,
+    status,
+    admin_note,
+    advance_payment,
+    discount,
+    final_note,
+    general_sales_conditions,
+  } = req.body;
+
   try {
     const estimate = await Estimate.findByPk(req.params.id);
     if (!estimate) {
       return res.status(404).json({ message: "Estimate not found" });
     }
+
+    await estimate.update({
+      client_id,
+      commercial_contact_id,
+      margin_ht,
+      object,
+      status,
+      admin_note,
+      advance_payment,
+      discount,
+      final_note,
+      general_sales_conditions,
+    });
+
     res.json(estimate);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching estimate", error });
+    res.status(500).json({ message: "Error updating estimate", error });
   }
 });
 
