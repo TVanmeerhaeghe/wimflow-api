@@ -4,6 +4,12 @@ const Estimate = require("../../models/Estimate/Estimate");
 const EstimateTask = require("../../models/Estimate/EstimateTask");
 const Client = require("../../models/Client");
 const { verifyToken, checkRole } = require("../../middleware/auth");
+const sgMail = require("@sendgrid/mail");
+const path = require("path");
+const fs = require("fs");
+const { emailLimiter } = require("../../middleware/emaillLimiter")
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 router.post("/create", verifyToken, checkRole("admin"), async (req, res) => {
     const {
@@ -147,6 +153,55 @@ router.put("/:id/update-totals", verifyToken, checkRole("admin"), async (req, re
   } catch (error) {
     console.error("Error updating totals:", error);
     res.status(500).json({ message: "Error updating totals", error });
+  }
+});
+
+// Route pour envoyer un devis par email
+router.post("/send-email/:id", emailLimiter, express.json({ limit: '10mb' }), async (req, res) => {
+  const { pdfBase64 } = req.body;
+  const estimateId = req.params.id;
+
+  try {
+    const estimate = await Estimate.findByPk(estimateId, {
+      include: {
+        model: Client,
+        attributes: ['email', 'company'],
+      },
+    });
+
+    if (!estimate || !estimate.Client) {
+      return res.status(404).json({ message: "Client ou devis non trouvé" });
+    }
+
+    const clientEmail = estimate.Client.email;
+    const clientCompany = estimate.Client.company;
+
+    const msg = {
+      to: clientEmail,
+      from: process.env.EMAIL_USER,
+      subject: `Votre devis n°${estimateId} de la société ${clientCompany}`,
+      text: `Veuillez trouver ci-joint le devis n°${estimateId} pour votre entreprise ${clientCompany}.`,
+      attachments: [
+        {
+          filename: `Devis_${estimateId}.pdf`,
+          content: pdfBase64.split(",")[1],
+          type: 'application/pdf',
+          disposition: 'attachment',
+        },
+      ],
+    };
+
+    try {
+      await sgMail.send(msg);
+      console.log(`Email envoyé à ${clientEmail} pour le devis ${estimateId}`);
+      res.status(200).json({ message: "Email envoyé avec succès" });
+    } catch (error) {
+      console.error(`Erreur lors de l'envoi de l'email : ${error.message}`);
+      res.status(500).json({ message: "Erreur lors de l'envoi de l'email", error: error.message });
+    }
+  } catch (error) {
+    console.error(`Erreur lors du traitement du devis ou du PDF : ${error.message}`);
+    res.status(500).json({ message: "Erreur lors de l'envoi du devis par email", error: error.message });
   }
 });
 

@@ -18,5 +18,6 @@ Estimate.belongsTo(Client, { foreignKey: "client_id" });
 Estimate.belongsTo(User, { foreignKey: "commercial_contact_id", as: "CommercialContact" });
 EstimateTask.belongsTo(Estimate, { foreignKey: "estimate_id" });
 Estimate.hasMany(EstimateTask, { foreignKey: "estimate_id" });
+Client.hasMany(Estimate, { foreignKey: 'client_id' });
 
 module.exports = { Note, Maintenance, User, Site, Client };
