@@ -5,8 +5,6 @@ const EstimateTask = require("../../models/Estimate/EstimateTask");
 const Client = require("../../models/Client");
 const { verifyToken, checkRole } = require("../../middleware/auth");
 const sgMail = require("@sendgrid/mail");
-const path = require("path");
-const fs = require("fs");
 const { emailLimiter } = require("../../middleware/emaillLimiter")
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
