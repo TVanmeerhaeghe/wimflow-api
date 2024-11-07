@@ -7,6 +7,8 @@ const Estimate = require("./Estimate/Estimate");
 const EstimateTask = require("./Estimate/EstimateTask");
 const Invoice = require("./Invoice/Invoice");
 const InvoiceTask = require("./Invoice/InvoiceTask");
+const Project = require("./Project/Project");
+const ProjectMember = require("./Project/ProjectMembers");
 
 // Associations pour Site, Maintenance, Note, etc.
 Site.hasMany(Maintenance, { foreignKey: "site_id" });
@@ -31,5 +33,30 @@ InvoiceTask.belongsTo(Invoice, { foreignKey: "invoice_id" });
 Invoice.hasMany(InvoiceTask, { foreignKey: "invoice_id" });
 Client.hasMany(Invoice, { foreignKey: "client_id" });
 
-module.exports = { Note, Maintenance, User, Site, Client, Estimate, EstimateTask, Invoice, InvoiceTask };
+// Associations pour Project et ProjectMember
+Project.belongsTo(Client, { foreignKey: "client_id" });
+Client.hasMany(Project, { foreignKey: "client_id" }); 
 
+Project.belongsToMany(User, {
+  through: ProjectMember,
+  foreignKey: "project_id",
+});
+
+User.belongsToMany(Project, {
+  through: ProjectMember,
+  foreignKey: "user_id",
+});
+
+module.exports = { 
+  Note, 
+  Maintenance, 
+  User, 
+  Site, 
+  Client, 
+  Estimate, 
+  EstimateTask, 
+  Invoice, 
+  InvoiceTask, 
+  Project, 
+  ProjectMember
+};
