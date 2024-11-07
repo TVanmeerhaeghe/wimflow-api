@@ -35,10 +35,11 @@ Client.hasMany(Invoice, { foreignKey: "client_id" });
 
 // Associations pour Project et ProjectMember
 Project.belongsTo(Client, { foreignKey: "client_id" });
-Client.hasMany(Project, { foreignKey: "client_id" }); 
+Client.hasMany(Project, { foreignKey: "client_id" });
 
 Project.belongsToMany(User, {
   through: ProjectMember,
+  as: "Members",
   foreignKey: "project_id",
 });
 
@@ -47,16 +48,16 @@ User.belongsToMany(Project, {
   foreignKey: "user_id",
 });
 
-module.exports = { 
-  Note, 
-  Maintenance, 
-  User, 
-  Site, 
-  Client, 
-  Estimate, 
-  EstimateTask, 
-  Invoice, 
-  InvoiceTask, 
-  Project, 
+module.exports = {
+  Note,
+  Maintenance,
+  User,
+  Site,
+  Client,
+  Estimate,
+  EstimateTask,
+  Invoice,
+  InvoiceTask,
+  Project,
   ProjectMember
 };
