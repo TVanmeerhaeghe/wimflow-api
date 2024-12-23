@@ -17,9 +17,9 @@ const ProjectTask = sequelize.define("ProjectTask", {
         allowNull: true,
     },
     status: {
-        type: DataTypes.ENUM("to_do", "in_progress", "done"),
+        type: DataTypes.ENUM("backlog", "to_do", "in_progress", "done"),
         allowNull: false,
-        defaultValue: "to_do",
+        defaultValue: "backlog",
     },
     image_url: {
         type: DataTypes.STRING,
