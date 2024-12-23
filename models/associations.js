@@ -9,6 +9,7 @@ const Invoice = require("./Invoice/Invoice");
 const InvoiceTask = require("./Invoice/InvoiceTask");
 const Project = require("./Project/Project");
 const ProjectMember = require("./Project/ProjectMembers");
+const ProjectTask = require("./Project/ProjectTask");
 
 // Associations pour Site, Maintenance, Note, etc.
 Site.hasMany(Maintenance, { foreignKey: "site_id" });
@@ -48,6 +49,9 @@ User.belongsToMany(Project, {
   foreignKey: "user_id",
 });
 
+Project.hasMany(ProjectTask, { foreignKey: "project_id", onDelete: "CASCADE" });
+ProjectTask.belongsTo(Project, { foreignKey: "project_id" });
+
 module.exports = {
   Note,
   Maintenance,
@@ -59,5 +63,6 @@ module.exports = {
   Invoice,
   InvoiceTask,
   Project,
-  ProjectMember
+  ProjectMember,
+  ProjectTask
 };

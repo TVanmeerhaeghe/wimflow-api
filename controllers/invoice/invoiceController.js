@@ -110,10 +110,47 @@ const sendInvoiceEmail = async (req, res) => {
   }
 };
 
+const updateInvoiceTotals = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const invoice = await Invoice.findByPk(id, {
+      include: { model: InvoiceTask },
+    });
+
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+
+    const totalHT = invoice.InvoiceTasks.reduce(
+      (total, task) => total + task.days * task.price_per_day,
+      0
+    );
+
+    const totalTVA = invoice.InvoiceTasks.reduce(
+      (total, task) => {
+        const taskTotalHT = task.days * task.price_per_day;
+        return total + taskTotalHT * (task.tva / 100);
+      },
+      0
+    );
+
+    await invoice.update({
+      total_ht: totalHT,
+      total_tva: totalTVA,
+    });
+
+    res.status(200).json({ message: "Invoice totals updated successfully", invoice });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating invoice totals", error });
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
   getInvoiceById,
   updateInvoice,
   sendInvoiceEmail,
+  updateInvoiceTotals,
 };
