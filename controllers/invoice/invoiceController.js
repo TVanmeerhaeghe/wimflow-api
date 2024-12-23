@@ -1,12 +1,13 @@
 const Invoice = require("../../models/Invoice/Invoice");
 const InvoiceTask = require("../../models/Invoice/InvoiceTask");
 const Client = require("../../models/Client");
+const Project = require("../../models/Project/Project");
 const sgMail = require("@sendgrid/mail");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const createInvoice = async (req, res) => {
-  const { client_id, commercial_contact_id, margin_ht, object, status, final_note } = req.body;
+  const { client_id, commercial_contact_id, margin_ht, object, status, final_note, project_id } = req.body;
 
   try {
     const invoice = await Invoice.create({
@@ -16,6 +17,7 @@ const createInvoice = async (req, res) => {
       object,
       status,
       final_note,
+      project_id
     });
 
     res.status(201).json(invoice);
@@ -55,7 +57,7 @@ const getInvoiceById = async (req, res) => {
 };
 
 const updateInvoice = async (req, res) => {
-  const { client_id, commercial_contact_id, margin_ht, object, status, final_note } = req.body;
+  const { client_id, commercial_contact_id, margin_ht, object, status, final_note, project_id } = req.body;
 
   try {
     const invoice = await Invoice.findByPk(req.params.id);
@@ -63,7 +65,7 @@ const updateInvoice = async (req, res) => {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
-    await invoice.update({ client_id, commercial_contact_id, margin_ht, object, status, final_note });
+    await invoice.update({ client_id, commercial_contact_id, margin_ht, object, status, final_note, project_id });
 
     res.json(invoice);
   } catch (error) {
@@ -146,6 +148,29 @@ const updateInvoiceTotals = async (req, res) => {
   }
 };
 
+const getInvoicesByProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const invoices = await Invoice.findAll({
+      where: { project_id: projectId },
+      include: [
+        { model: Client, attributes: ['company'] },
+        { model: Project, attributes: ['name'] },
+      ],
+    });
+
+    if (!invoices.length) {
+      return res.status(404).json({ message: "No invoices found for this project" });
+    }
+
+    res.json(invoices);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching invoices for project", error });
+  }
+};
+
+
 module.exports = {
   createInvoice,
   getAllInvoices,
@@ -153,4 +178,5 @@ module.exports = {
   updateInvoice,
   sendInvoiceEmail,
   updateInvoiceTotals,
+  getInvoicesByProject
 };

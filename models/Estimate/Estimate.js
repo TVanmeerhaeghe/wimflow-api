@@ -2,7 +2,8 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/db");
 const Client = require("../Client");
 const User = require("../User");
-const EstimateTask = require("./EstimateTask");     
+const EstimateTask = require("./EstimateTask");
+const Project = require("../Project/Project");
 
 const Estimate = sequelize.define("Estimate", {
   id: {
@@ -69,6 +70,14 @@ const Estimate = sequelize.define("Estimate", {
   },
   final_note: {
     type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  project_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Project,
+      key: "id",
+    },
     allowNull: true,
   },
 });

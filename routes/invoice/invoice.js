@@ -9,5 +9,6 @@ router.get("/:id", verifyToken, checkRole("admin"), InvoiceController.getInvoice
 router.put("/:id", verifyToken, checkRole("admin"), InvoiceController.updateInvoice);
 router.post("/send-email/:id", verifyToken, checkRole("admin"), InvoiceController.sendInvoiceEmail);
 router.put("/:id/update-totals", verifyToken, checkRole("admin"), InvoiceController.updateInvoiceTotals);
+router.get("/project/:projectId", verifyToken, checkRole("admin"), InvoiceController.getInvoicesByProject);
 
 module.exports = router;

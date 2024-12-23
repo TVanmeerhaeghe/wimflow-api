@@ -9,5 +9,6 @@ router.get("/:id", verifyToken, checkRole("admin"), estimateController.getEstima
 router.put("/:id", verifyToken, checkRole("admin"), estimateController.updateEstimate);
 router.put("/:id/update-totals", verifyToken, checkRole("admin"), estimateController.updateEstimateTotals);
 router.post("/send-email/:id", verifyToken, checkRole("admin"), estimateController.sendEstimateEmail);
+router.get("/project/:projectId", verifyToken, checkRole("admin"), estimateController.getEstimatesByProject);
 
 module.exports = router;

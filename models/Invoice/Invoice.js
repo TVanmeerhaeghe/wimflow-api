@@ -3,6 +3,7 @@ const sequelize = require("../../config/db");
 const Client = require("../Client");
 const User = require("../User");
 const InvoiceTask = require("./InvoiceTask");
+const Project = require("../Project/Project");
 
 const Invoice = sequelize.define("Invoice", {
   id: {
@@ -59,6 +60,14 @@ const Invoice = sequelize.define("Invoice", {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  project_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Project,
+      key: "id",
+    },
+    allowNull: true,
+  },
 });
 
 Invoice.beforeCreate(async (invoice) => {
@@ -76,20 +85,20 @@ Invoice.beforeCreate(async (invoice) => {
 });
 
 Invoice.beforeSave(async (invoice) => {
-    const tasks = await InvoiceTask.findAll({ where: { invoice_id: invoice.id } });
-  
-    const totalHT = tasks.reduce((total, task) => {
-      return total + task.days * task.price_per_day;
-    }, 0);
-  
-    const totalTVA = tasks.reduce((total, task) => {
-      const taskTotalHT = task.days * task.price_per_day;
-      const taskTVA = taskTotalHT * (task.tva / 100);
-      return total + taskTVA;
-    }, 0);
-  
-    invoice.total_ht = totalHT;
-    invoice.total_tva = totalTVA;
+  const tasks = await InvoiceTask.findAll({ where: { invoice_id: invoice.id } });
+
+  const totalHT = tasks.reduce((total, task) => {
+    return total + task.days * task.price_per_day;
+  }, 0);
+
+  const totalTVA = tasks.reduce((total, task) => {
+    const taskTotalHT = task.days * task.price_per_day;
+    const taskTVA = taskTotalHT * (task.tva / 100);
+    return total + taskTVA;
+  }, 0);
+
+  invoice.total_ht = totalHT;
+  invoice.total_tva = totalTVA;
 });
 
 module.exports = Invoice;

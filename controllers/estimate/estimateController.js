@@ -17,6 +17,7 @@ const createEstimate = async (req, res) => {
     discount,
     final_note,
     general_sales_conditions,
+    project_id,
   } = req.body;
 
   try {
@@ -31,6 +32,7 @@ const createEstimate = async (req, res) => {
       discount,
       final_note,
       general_sales_conditions,
+      project_id,
     });
 
     res.status(201).json(estimate);
@@ -81,6 +83,7 @@ const updateEstimate = async (req, res) => {
     discount,
     final_note,
     general_sales_conditions,
+    project_id,
   } = req.body;
 
   try {
@@ -100,6 +103,7 @@ const updateEstimate = async (req, res) => {
       discount,
       final_note,
       general_sales_conditions,
+      project_id,
     });
 
     res.json(estimate);
@@ -174,6 +178,28 @@ const sendEstimateEmail = async (req, res) => {
   }
 };
 
+const getEstimatesByProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const estimates = await Estimate.findAll({
+      where: { project_id: projectId },
+      include: [
+        { model: Client, attributes: ['company'] },
+        { model: EstimateTask, attributes: ['designation', 'price_per_day', 'days', 'tva'] },
+      ],
+    });
+
+    if (!estimates.length) {
+      return res.status(404).json({ message: "No estimates found for this project" });
+    }
+
+    res.json(estimates);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching estimates for project", error });
+  }
+};
+
 module.exports = {
   createEstimate,
   getAllEstimates,
@@ -181,4 +207,5 @@ module.exports = {
   updateEstimate,
   updateEstimateTotals,
   sendEstimateEmail,
+  getEstimatesByProject,
 };

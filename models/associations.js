@@ -52,6 +52,10 @@ User.belongsToMany(Project, {
 Project.hasMany(ProjectTask, { foreignKey: "project_id", onDelete: "CASCADE" });
 ProjectTask.belongsTo(Project, { foreignKey: "project_id" });
 
+// Associations pour Factures et Projets
+Invoice.belongsTo(Project, { foreignKey: 'project_id' });
+Project.hasMany(Invoice, { foreignKey: 'project_id' });
+
 module.exports = {
   Note,
   Maintenance,
