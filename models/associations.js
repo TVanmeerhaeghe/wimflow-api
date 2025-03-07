@@ -10,6 +10,7 @@ const InvoiceTask = require("./Invoice/InvoiceTask");
 const Project = require("./Project/Project");
 const ProjectMember = require("./Project/ProjectMembers");
 const ProjectTask = require("./Project/ProjectTask");
+const ProjectFile = require('./Project/ProjectFile');
 
 // Associations pour Site, Maintenance, Note, etc.
 Site.hasMany(Maintenance, { foreignKey: "site_id" });
@@ -56,6 +57,11 @@ ProjectTask.belongsTo(Project, { foreignKey: "project_id" });
 Invoice.belongsTo(Project, { foreignKey: 'project_id' });
 Project.hasMany(Invoice, { foreignKey: 'project_id' });
 
+// Associations pour Projets et ProjectFile
+Project.hasMany(ProjectFile, { foreignKey: 'project_id', as: 'files' });
+ProjectFile.belongsTo(Project, { foreignKey: 'project_id', as: 'project' });
+
+
 module.exports = {
   Note,
   Maintenance,
@@ -68,5 +74,6 @@ module.exports = {
   InvoiceTask,
   Project,
   ProjectMember,
-  ProjectTask
+  ProjectTask,
+  ProjectFile
 };
